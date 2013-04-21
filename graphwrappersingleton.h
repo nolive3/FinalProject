@@ -19,7 +19,7 @@ class GraphWrapper
         GraphWrapper& operator=(const GraphWrapper&) = delete;
     protected:
     private:
-        boost::adjacency_list graph;
+        boost::adjacency_list<boost::listS, boost::listS> graph;
         //the map between vertex num and memory address
         GraphWrapper();
 };

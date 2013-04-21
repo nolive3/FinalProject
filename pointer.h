@@ -1,7 +1,7 @@
 #ifndef POINTER_H
 #define POINTER_H
 #include <utility>
-
+#include "graphwrappersingleton.h"
 template <typename T>
 class Pointer
 {
@@ -31,6 +31,9 @@ class Pointer
         ~Pointer(){
             mem_map.remove_edge(owner, target);
             mem_map.collect();
+        }
+        T& operator*(){
+            return *target;
         }
     protected:
     private:
