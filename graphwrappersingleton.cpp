@@ -170,6 +170,7 @@ void GraphWrapper::reclaim_memory()
         node_addr_map.erase(bimap_val(vert, node_addr_map.left.at(vert)));
         unsigned int idx = node_index_map.left.at(vert);
         node_index_map.erase(indexmap_val(vert, idx));
+        --index;
         if(idx!=index){
             vert_type v = node_index_map.right.at(index); //move the last node to the newly freed index
             node_index_map.erase(indexmap_val(v, index)); // remove it from the map
@@ -177,6 +178,5 @@ void GraphWrapper::reclaim_memory()
             boost::put(boost::get(boost::vertex_index, graph), v, idx); //update the index in the graph
         }
 
-        --index;
     });
 }
