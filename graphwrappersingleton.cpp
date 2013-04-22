@@ -60,8 +60,8 @@ void GraphWrapper::remove_edge(void*src, void*dst){
 }
 void GraphWrapper::collect()
 {
-    print_stats();
     reclaim_memory();
+    print_stats();
 }
 
 class bfs_visited_visitor:public boost::default_bfs_visitor {
