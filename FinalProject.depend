@@ -1,17 +1,18 @@
 # depslib dependency file v1.0
-1366612924 source:c:\users\nick\documents\github\finalproject\main.cpp
+1366670647 source:c:\users\nick\documents\github\finalproject\main.cpp
 	<iostream>
 	"pointer.h"
 	"graphwrappersingleton.h"
+	"node.h"
 
 1366315003 source:c:\users\nick\documents\github\finalproject\pointer.cpp
 	"pointer.h"
 
-1366603724 c:\users\nick\documents\github\finalproject\pointer.h
+1366671987 c:\users\nick\documents\github\finalproject\pointer.h
 	<utility>
 	"graphwrappersingleton.h"
 
-1366643020 source:c:\users\nick\documents\github\finalproject\graphwrappersingleton.cpp
+1366670882 source:c:\users\nick\documents\github\finalproject\graphwrappersingleton.cpp
 	<boost/graph/graphviz.hpp>
 	<iostream>
 	<fstream>
@@ -24,4 +25,11 @@
 	"boost/graph/adjacency_list.hpp"
 	"boost/bimap.hpp"
 	<string>
+
+1366671775 c:\users\nick\documents\github\finalproject\node.h
+	"pointer.h"
+	<list>
+
+1366671775 source:c:\users\nick\documents\github\finalproject\node.cpp
+	"node.h"
 

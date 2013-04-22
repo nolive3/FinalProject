@@ -77,7 +77,7 @@ void GraphWrapper::collect()
     std::cerr << "Calling " << "collect" << std::endl;
     print_stats();
     reclaim_memory();
-    print_stats();
+    //print_stats();
     std::cerr << std::endl << std::endl;
 }
 
@@ -92,6 +92,7 @@ public:
     std::cerr << "Calling " << "discover " << u << std::endl;
     vis_set.insert(u);
     }
+    /* This wuz debugging
     template < typename Edge, typename Graph >
     void examine_edge(Edge e, Graph g) const
     {
@@ -132,6 +133,7 @@ public:
     {
         std::cerr << "Non-Tree edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
     }
+    */
 };
 
 void GraphWrapper::print_stats()

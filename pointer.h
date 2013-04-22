@@ -11,7 +11,10 @@ class Pointer
             mem_map.add_edge(owner, target);
             mem_map.collect();
         }
-        Pointer(const Pointer&) = delete;
+        Pointer(const Pointer& o) : target(o.target), owner(o.owner), mem_map(GraphWrapper::get()){
+            mem_map.add_edge(owner, target);
+            mem_map.collect();
+        };
         Pointer(const Pointer& other, void*newowner) : target(other.target), owner(newowner), mem_map(GraphWrapper::get()){
             // move may be a problem
             mem_map.add_edge(owner, target);
@@ -34,6 +37,10 @@ class Pointer
             target = other;
             mem_map.add_edge(owner, target);
             mem_map.collect();
+        }
+        T* operator->(){
+            // move may be a problem here too
+            return target;
         }
         ~Pointer(){
             mem_map.remove_edge(owner, target);

@@ -1,51 +1,22 @@
 #include <iostream>
 #include "pointer.h"
 #include "graphwrappersingleton.h"
+#include "node.h"
+
+Pointer<Node>& tree(int depth, int bf)
+{
+    Pointer<Node> node(new Node, nullptr);
+    Pointer<Node> tmp(nullptr);
+    for(int i = 0; i < bf; ++i){
+        tmp = tree(depth-1, bf);
+        node->add(tmp);
+    }
+    return node;
+}
+
 int main(void)
 {{
-    Pointer<int> p(nullptr);//1 ctor
-    {
-        Pointer<int> pint(new int, nullptr);//2 ctor
-        *pint = 1;
-        p = pint;//3 opr=
-    }//4 dtor
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr);//5 ctor
-        *pint = 2;
-        p = pint;//6 opr=
-    }//7 dtor
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr); //8 ctor
-        *pint = 3;
-        p = pint; //9 opr=
-    }//10 dtor
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr);
-        *pint = 4;
-        p = pint;
-    }
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr);
-        *pint = 5;
-        p = pint;
-    }
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr);
-        *pint = 6;
-        p = pint;
-    }
-    std::cout << *p;
-    {
-        Pointer<int> pint(new int, nullptr);
-        *pint = 7;
-        p = pint;
-    }
-    std::cout << *p;
+    Pointer<Node> poop = tree(3, 2);
 }//end main body
 //reclaim any remaining memory
 GraphWrapper::get().collect();

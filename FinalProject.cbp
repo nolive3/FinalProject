@@ -34,6 +34,8 @@
 		<Unit filename="graphwrappersingleton.cpp" />
 		<Unit filename="graphwrappersingleton.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="node.cpp" />
+		<Unit filename="node.h" />
 		<Unit filename="pointer.h" />
 		<Extensions>
 			<code_completion />
