@@ -1,6 +1,8 @@
 #ifndef GRAPHWRAPPERSINGLETON_H
 #define GRAPHWRAPPERSINGLETON_H
 #include "boost/graph/adjacency_list.hpp"
+#include "boost/bimap.hpp"
+#include <string>
 
 class GraphWrapper
 {
@@ -19,8 +21,20 @@ class GraphWrapper
         GraphWrapper& operator=(const GraphWrapper&) = delete;
     protected:
     private:
-        boost::adjacency_list<boost::listS, boost::listS> graph;
-        //the map between vertex num and memory address
+        boost::adjacency_list<boost::listS, boost::vecS, boost::directedS> graph;
+        boost::bimap
+        <
+            boost::adjacency_list
+            <
+                boost::listS,
+                boost::vecS
+            >::vertex_descriptor,
+            void*
+        > node_addr_map; // maps from node id to memory address (left) and back (right)
+        std::string graph_file_base;
+        int graph_num;
+        void print_stats();
+        void reclaim_memory();
         GraphWrapper();
 };
 
