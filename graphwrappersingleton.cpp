@@ -12,6 +12,8 @@ typedef graph_type::vertex_descriptor vert_type;
 
 typedef boost::bimap<vert_type, void *> bimap_type;
 typedef bimap_type::value_type bimap_val;
+typedef boost::bimap<vert_type, unsigned int> indexmap_type;
+typedef indexmap_type::value_type indexmap_val;
 
 template <typename L, typename R>
 bool lcontains(const L& val, const boost::bimap<L,R>& bmap)
@@ -25,7 +27,7 @@ bool rcontains(const R& val, const boost::bimap<L,R>& bmap)
 }
 
 
-GraphWrapper::GraphWrapper() : graph(), node_addr_map(), graph_file_base("map"), graph_num(1)
+GraphWrapper::GraphWrapper() : index(0), graph(), node_addr_map(), node_index_map(), graph_file_base("map"), graph_num(1)
 {
     std::cerr << "Calling " << "ctor" << std::endl;
     // the node representing main is required for all algorithms, so dont risk it not existing when reclaim_memory() is called
@@ -42,7 +44,11 @@ GraphWrapper::~GraphWrapper()
 }
 void GraphWrapper::add_node(void*node){
     std::cerr << "Calling " << "add_node" << node << std::endl;
-    node_addr_map.insert(bimap_val(boost::add_vertex(graph), node));
+    vert_type& v = boost::add_vertex(graph);
+    node_addr_map.insert(bimap_val(v, node));
+    node_index_map.insert(indexmap_val(v, index));
+    boost::put(boost::get(vertex_index, graph), v, index);
+    ++index;
 }
 void GraphWrapper::add_edge(void*src, void*dst){
     std::cerr << "Calling " << "add_edge" << src  << "  "  << dst;
@@ -83,8 +89,48 @@ public:
     template < typename Vertex, typename Graph >
     void discover_vertex(Vertex u, const Graph & g) const
     {
-    std::cerr << "Calling " << "discover" << u << std::endl;
+    std::cerr << "Calling " << "discover " << u << std::endl;
     vis_set.insert(u);
+    }
+    template < typename Edge, typename Graph >
+    void examine_edge(Edge e, Graph g) const
+    {
+        std::cerr << "Examining edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
+    }
+    template < typename Vertex, typename Graph >
+    void initialize_vertex(Vertex u, const Graph & g) const
+    {
+    std::cerr << "Calling " << "initialize " << u << std::endl;
+    }
+    template < typename Vertex, typename Graph >
+    void examine_vertex(Vertex u, const Graph & g) const
+    {
+    std::cerr << "Calling " << "examine " << u << std::endl;
+    }
+    template < typename Vertex, typename Graph >
+    void finish_vertex(Vertex u, const Graph & g) const
+    {
+    std::cerr << "Calling " << "finish " << u << std::endl;
+    }
+    template < typename Edge, typename Graph >
+    void grey_target(Edge e, Graph g) const
+    {
+        std::cerr << "Ignoring grey edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
+    }
+    template < typename Edge, typename Graph >
+    void black_target(Edge e, Graph g) const
+    {
+        std::cerr << "Ignoring black edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
+    }
+    template < typename Edge, typename Graph >
+    void tree_edge(Edge e, Graph g) const
+    {
+        std::cerr << "Tree edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
+    }
+    template < typename Edge, typename Graph >
+    void non_tree_edge(Edge e, Graph g) const
+    {
+        std::cerr << "Non-Tree edge: " << boost::source(e, g) <<"-->"<<boost::target(e, g)<<std::endl;
     }
 };
 
@@ -93,6 +139,11 @@ void GraphWrapper::print_stats()
     std::stringstream s;
     s<<graph_file_base<<(graph_num++)<<".dot";
     std::ofstream ofile(s.str());
+    auto e = boost::edges(graph);
+    std::cerr<<"edges:"<< std::endl;
+    for_each(e.first, e.second, [&](const graph_type::edge_descriptor& edge){
+        std::cerr << boost::source(edge, graph) <<"-->"<<boost::target(edge, graph)<<std::endl;
+    });
     std::cerr << "Nodes in system at now: " <<s.str()<< std::endl;
     for(auto i : node_addr_map.left){
         std::cerr << i.first << " " << i.second << std::endl;
@@ -117,5 +168,15 @@ void GraphWrapper::reclaim_memory()
         boost::remove_vertex(vert, graph);
         delete node_addr_map.left.at(vert);
         node_addr_map.erase(bimap_val(vert, node_addr_map.left.at(vert)));
+        unsigned int idx = node_index_map.left.at(vert);
+        node_index_map.erase(indexmap_val(vert, idx));
+        if(idx!=index){
+            vertex_type v = node_index_map.right.at(index); //move the last node to the newly freed index
+            node_index_map.erase(indexmap_val(v, index)); // remove it from the map
+            node_index_map.insert(indexmap_val(v, idx)); // put it back with its new index
+            boost::put(boost::get(vertex_index, graph), v, idx); //update the index in the graph
+        }
+
+        --index;
     });
 }

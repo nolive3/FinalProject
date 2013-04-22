@@ -21,6 +21,7 @@ class GraphWrapper
         GraphWrapper& operator=(const GraphWrapper&) = delete;
     protected:
     private:
+        unsigned int index;
         boost::adjacency_list<boost::listS, boost::listS, boost::directedS, boost::property<boost::vertex_index_t, unsigned int>> graph;
         boost::bimap
         <
@@ -31,6 +32,15 @@ class GraphWrapper
             >::vertex_descriptor,
             void*
         > node_addr_map; // maps from node id to memory address (left) and back (right)
+        boost::bimap
+        <
+            boost::adjacency_list
+            <
+                boost::listS,
+                boost::listS
+            >::vertex_descriptor,
+            unsigned int
+        > node_index_map;
         std::string graph_file_base;
         int graph_num;
         void print_stats();
