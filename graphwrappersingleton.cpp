@@ -44,10 +44,10 @@ GraphWrapper::~GraphWrapper()
 }
 void GraphWrapper::add_node(void*node){
     std::cerr << "Calling " << "add_node" << node << std::endl;
-    vert_type& v = boost::add_vertex(graph);
+    const vert_type& v = boost::add_vertex(graph);
     node_addr_map.insert(bimap_val(v, node));
     node_index_map.insert(indexmap_val(v, index));
-    boost::put(boost::get(vertex_index, graph), v, index);
+    boost::put(boost::get(boost::vertex_index, graph), v, index);
     ++index;
 }
 void GraphWrapper::add_edge(void*src, void*dst){
@@ -171,10 +171,10 @@ void GraphWrapper::reclaim_memory()
         unsigned int idx = node_index_map.left.at(vert);
         node_index_map.erase(indexmap_val(vert, idx));
         if(idx!=index){
-            vertex_type v = node_index_map.right.at(index); //move the last node to the newly freed index
+            vert_type v = node_index_map.right.at(index); //move the last node to the newly freed index
             node_index_map.erase(indexmap_val(v, index)); // remove it from the map
             node_index_map.insert(indexmap_val(v, idx)); // put it back with its new index
-            boost::put(boost::get(vertex_index, graph), v, idx); //update the index in the graph
+            boost::put(boost::get(boost::vertex_index, graph), v, idx); //update the index in the graph
         }
 
         --index;
