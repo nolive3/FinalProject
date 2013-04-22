@@ -163,7 +163,7 @@ void GraphWrapper::reclaim_memory()
         }
     });
     std::for_each(std::begin(unreachable_set), std::end(unreachable_set), [&](const vert_type& vert){
-                  std::cerr << "deleting node " << node_addr_map.left.at(vert) << " at index " << vert << std::endl;
+                  std::cerr << "deleting node " << node_addr_map.left.at(vert) << " id " << vert << " at index " << node_index_map.left.at(vert) << std::endl;
         boost::clear_vertex(vert, graph);
         boost::remove_vertex(vert, graph);
         delete node_addr_map.left.at(vert);
