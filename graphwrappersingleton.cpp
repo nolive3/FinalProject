@@ -6,7 +6,7 @@
 #include <boost/graph/breadth_first_search.hpp>
 #include "graphwrappersingleton.h"
 
-typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS> graph_type;
+typedef boost::adjacency_list<boost::listS, boost::listS, boost::directedS, boost::property<boost::vertex_index_t, unsigned int>> graph_type;
 typedef graph_type::vertex_descriptor vert_type;
 
 
@@ -27,21 +27,25 @@ bool rcontains(const R& val, const boost::bimap<L,R>& bmap)
 
 GraphWrapper::GraphWrapper() : graph(), node_addr_map(), graph_file_base("map"), graph_num(1)
 {
+    std::cerr << "Calling " << "ctor" << std::endl;
     // the node representing main is required for all algorithms, so dont risk it not existing when reclaim_memory() is called
     add_node(nullptr);
 }
 
 GraphWrapper::~GraphWrapper()
 {
+    std::cerr << "Calling " << "dtor" << std::endl;
     std::cerr << "Nodes still in system at end: " << std::endl;
     for(auto i : node_addr_map.left){
         std::cerr << i.first << " " << i.second << std::endl;
     }
 }
 void GraphWrapper::add_node(void*node){
+    std::cerr << "Calling " << "add_node" << node << std::endl;
     node_addr_map.insert(bimap_val(boost::add_vertex(graph), node));
 }
 void GraphWrapper::add_edge(void*src, void*dst){
+    std::cerr << "Calling " << "add_edge" << src  << "  "  << dst;
     if(dst==nullptr) return;
     if(!rcontains(src,node_addr_map)){
         add_node(src);
@@ -49,9 +53,11 @@ void GraphWrapper::add_edge(void*src, void*dst){
     if(!rcontains(dst,node_addr_map)){
         add_node(dst);
     }
+    std::cerr << "adding edge " << node_addr_map.right.at(src) << "-->" << node_addr_map.right.at(dst) << std::endl;
     boost::add_edge(node_addr_map.right.at(src), node_addr_map.right.at(dst), graph);
 }
 void GraphWrapper::remove_edge(void*src, void*dst){
+    std::cerr << "Calling " << "remove_edge" << src  << "  "  << dst << std::endl;
     if(dst==nullptr) return;
     //we know the edge has to exist since it was inserted
     //during the constructor and now the destructor is deleting it
@@ -60,8 +66,13 @@ void GraphWrapper::remove_edge(void*src, void*dst){
 }
 void GraphWrapper::collect()
 {
+
+    std::cerr << std::endl << std::endl;
+    std::cerr << "Calling " << "collect" << std::endl;
+    print_stats();
     reclaim_memory();
     print_stats();
+    std::cerr << std::endl << std::endl;
 }
 
 class bfs_visited_visitor:public boost::default_bfs_visitor {
@@ -72,6 +83,7 @@ public:
     template < typename Vertex, typename Graph >
     void discover_vertex(Vertex u, const Graph & g) const
     {
+    std::cerr << "Calling " << "discover" << u << std::endl;
     vis_set.insert(u);
     }
 };
@@ -85,7 +97,6 @@ void GraphWrapper::print_stats()
     for(auto i : node_addr_map.left){
         std::cerr << i.first << " " << i.second << std::endl;
     }
-    std::cerr << std::endl << std::endl;
     write_graphviz(ofile, graph);
 }
 void GraphWrapper::reclaim_memory()
