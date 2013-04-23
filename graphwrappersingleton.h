@@ -5,7 +5,7 @@
 #include <string>
 
 class GraphWrapper
-{
+{ 
     public:
         static GraphWrapper& get(){
             static GraphWrapper inst;
